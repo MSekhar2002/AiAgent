@@ -33,7 +33,7 @@ import {
 } from '@mui/icons-material';
 import { AuthContext } from '../../context/AuthContext';
 import { NotificationContext } from '../../context/NotificationContext';
-
+import {Settings as  SettingsIcon} from '@mui/icons-material';
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -142,12 +142,13 @@ const Dashboard = () => {
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
     { text: 'Schedules', icon: <EventIcon />, path: '/schedules' },
     { text: 'Locations', icon: <LocationOnIcon />, path: '/locations' },
-    { text: 'Notifications', icon: <NotificationsIcon />, path: '/notifications' }
+    { text: 'Notifications', icon: <NotificationsIcon />, path: '/notifications' }    
   ];
 
   // Add admin-only menu items
   if (user && user.role === 'admin') {
     menuItems.splice(1, 0, { text: 'Users', icon: <PeopleIcon />, path: '/users' });
+    menuItems.push({ text: 'Settings', icon: <SettingsIcon />, path: '/whatsapp' });
   }
 
   return (

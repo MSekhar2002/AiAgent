@@ -40,6 +40,7 @@ import {
 
 const WhatsAppDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const [activeTemplateTab, setActiveTemplateTab] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -49,6 +50,52 @@ const WhatsAppDashboard = () => {
     autoReplyEnabled: true,
     welcomeMessage: 'Welcome to the Employee Scheduling System. How can I help you today?',
     aiProcessingEnabled: true,
+    templates: {
+      scheduleReminder: {
+        name: 'schedule_reminder',
+        language: 'en',
+        components: [
+          {
+            type: 'body',
+            parameters: [
+              { type: 'text', text: '{{1}}' }, // name
+              { type: 'text', text: '{{2}}' }, // date
+              { type: 'text', text: '{{3}}' }, // time
+              { type: 'text', text: '{{4}}' }  // location
+            ]
+          }
+        ]
+      },
+      scheduleChange: {
+        name: 'schedule_change',
+        language: 'en',
+        components: [
+          {
+            type: 'body',
+            parameters: [
+              { type: 'text', text: '{{1}}' }, // name
+              { type: 'text', text: '{{2}}' }, // date
+              { type: 'text', text: '{{3}}' }, // time
+              { type: 'text', text: '{{4}}' }  // location
+            ]
+          }
+        ]
+      },
+      generalAnnouncement: {
+        name: 'general_announcement',
+        language: 'en',
+        components: [
+          {
+            type: 'body',
+            parameters: [
+              { type: 'text', text: '{{1}}' }, // name
+              { type: 'text', text: '{{2}}' }  // message
+            ]
+          }
+        ]
+      }
+    },
+    // Legacy template format for backward compatibility
     notificationTemplates: {
       scheduleReminder: 'Hello {{name}}, this is a reminder about your upcoming shift on {{date}} at {{time}} at {{location}}.',
       scheduleChange: 'Hello {{name}}, your schedule has been updated. Your new shift is on {{date}} at {{time}} at {{location}}.',
@@ -253,116 +300,211 @@ const WhatsAppDashboard = () => {
       {/* Settings Tab */}
       {activeTab === 1 && (
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" component="h2" gutterBottom>
-            WhatsApp Integration Settings
+          <Typography variant="h6" component="h2" mb={3}>
+            WhatsApp Configuration
           </Typography>
-          <Divider sx={{ mb: 3 }} />
-
+          
           <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <Card>
+            <Grid item xs={12} md={6}>
+              <Card sx={{ mb: 3 }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     General Settings
                   </Typography>
                   
-                  <Stack spacing={2}>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={settings.enabled}
-                          onChange={handleSettingsChange}
-                          name="enabled"
-                          color="primary"
-                        />
-                      }
-                      label="Enable WhatsApp Integration"
-                    />
-                    
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={settings.autoReplyEnabled}
-                          onChange={handleSettingsChange}
-                          name="autoReplyEnabled"
-                          color="primary"
-                        />
-                      }
-                      label="Enable Auto-Reply"
-                    />
-                    
-                    <TextField
-                      label="Welcome Message"
-                      name="welcomeMessage"
-                      value={settings.welcomeMessage}
-                      onChange={handleSettingsChange}
-                      fullWidth
-                      multiline
-                      rows={2}
-                    />
-                  </Stack>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={settings.enabled}
+                        onChange={handleSettingsChange}
+                        name="enabled"
+                        color="primary"
+                      />
+                    }
+                    label="Enable WhatsApp Integration"
+                  />
+                  
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={settings.autoReplyEnabled}
+                        onChange={handleSettingsChange}
+                        name="autoReplyEnabled"
+                        color="primary"
+                      />
+                    }
+                    label="Enable Auto-Reply"
+                  />
+                  
+                  <TextField
+                    fullWidth
+                    label="Welcome Message"
+                    name="welcomeMessage"
+                    value={settings.welcomeMessage}
+                    onChange={handleSettingsChange}
+                    margin="normal"
+                    multiline
+                    rows={2}
+                  />
                 </CardContent>
               </Card>
-            </Grid>
-
-            <Grid item xs={12}>
+              
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
-                    Notification Templates
+                    AI Configuration
                   </Typography>
                   
-                  <Stack spacing={2}>
-                    <TextField
-                      label="Schedule Reminder Template"
-                      name="notificationTemplates.scheduleReminder"
-                      value={settings.notificationTemplates.scheduleReminder}
-                      onChange={handleSettingsChange}
-                      fullWidth
-                      multiline
-                      rows={2}
-                      helperText="Available variables: {{name}}, {{date}}, {{time}}, {{location}}"
-                    />
-                    
-                    <TextField
-                      label="Schedule Change Template"
-                      name="notificationTemplates.scheduleChange"
-                      value={settings.notificationTemplates.scheduleChange}
-                      onChange={handleSettingsChange}
-                      fullWidth
-                      multiline
-                      rows={2}
-                      helperText="Available variables: {{name}}, {{date}}, {{time}}, {{location}}"
-                    />
-                    
-                    <TextField
-                      label="General Announcement Template"
-                      name="notificationTemplates.generalAnnouncement"
-                      value={settings.notificationTemplates.generalAnnouncement}
-                      onChange={handleSettingsChange}
-                      fullWidth
-                      multiline
-                      rows={2}
-                      helperText="Available variables: {{name}}, {{message}}"
-                    />
-                  </Stack>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={settings.aiProcessingEnabled}
+                        onChange={handleSettingsChange}
+                        name="aiProcessingEnabled"
+                        color="primary"
+                      />
+                    }
+                    label="Enable AI Processing"
+                  />
                 </CardContent>
               </Card>
             </Grid>
-
-            <Grid item xs={12}>
-              <Box display="flex" justifyContent="flex-end">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<SaveIcon />}
-                  onClick={handleSaveSettings}
-                >
-                  Save Settings
-                </Button>
-              </Box>
+            
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Meta WhatsApp Templates
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" paragraph>
+                    These templates must be approved in your Meta WhatsApp Business dashboard before use.
+                  </Typography>
+                  
+                  <Tabs
+                    value={activeTemplateTab}
+                    onChange={(e, newValue) => setActiveTemplateTab(newValue)}
+                    indicatorColor="primary"
+                    textColor="primary"
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    sx={{ mb: 2 }}
+                  >
+                    <Tab label="Schedule Reminder" />
+                    <Tab label="Schedule Change" />
+                    <Tab label="Announcement" />
+                  </Tabs>
+                  
+                  {/* Schedule Reminder Template */}
+                  {activeTemplateTab === 0 && (
+                    <Box>
+                      <TextField
+                        fullWidth
+                        label="Template Name"
+                        name="templates.scheduleReminder.name"
+                        value={settings.templates?.scheduleReminder?.name || 'schedule_reminder'}
+                        onChange={handleSettingsChange}
+                        margin="normal"
+                        helperText="Must match the template name in Meta WhatsApp dashboard"
+                      />
+                      <TextField
+                        fullWidth
+                        label="Language Code"
+                        name="templates.scheduleReminder.language"
+                        value={settings.templates?.scheduleReminder?.language || 'en'}
+                        onChange={handleSettingsChange}
+                        margin="normal"
+                        helperText="e.g., en, es_ES"
+                      />
+                      <Typography variant="subtitle2" mt={2}>
+                        Parameters:
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        1. {'{{'}}1{'}}'}  - Employee Name<br />
+                        2. {'{{'}}2{'}}'}  - Date<br />
+                        3. {'{{'}}3{'}}'}  - Time<br />
+                        4. {'{{'}}4{'}}'}  - Location
+                      </Typography>
+                    </Box>
+                  )}
+                  
+                  {/* Schedule Change Template */}
+                  {activeTemplateTab === 1 && (
+                    <Box>
+                      <TextField
+                        fullWidth
+                        label="Template Name"
+                        name="templates.scheduleChange.name"
+                        value={settings.templates?.scheduleChange?.name || 'schedule_change'}
+                        onChange={handleSettingsChange}
+                        margin="normal"
+                        helperText="Must match the template name in Meta WhatsApp dashboard"
+                      />
+                      <TextField
+                        fullWidth
+                        label="Language Code"
+                        name="templates.scheduleChange.language"
+                        value={settings.templates?.scheduleChange?.language || 'en'}
+                        onChange={handleSettingsChange}
+                        margin="normal"
+                        helperText="e.g., en, es_ES"
+                      />
+                      <Typography variant="subtitle2" mt={2}>
+                        Parameters:
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        1. {'{{'}}1{'}}'}  - Employee Name<br />
+                        2. {'{{'}}2{'}}'}  - Date<br />
+                        3. {'{{'}}3{'}}'}  - Time<br />
+                        4. {'{{'}}4{'}}'}  - Location
+                      </Typography>
+                    </Box>
+                  )}
+                  
+                  {/* Announcement Template */}
+                  {activeTemplateTab === 2 && (
+                    <Box>
+                      <TextField
+                        fullWidth
+                        label="Template Name"
+                        name="templates.generalAnnouncement.name"
+                        value={settings.templates?.generalAnnouncement?.name || 'general_announcement'}
+                        onChange={handleSettingsChange}
+                        margin="normal"
+                        helperText="Must match the template name in Meta WhatsApp dashboard"
+                      />
+                      <TextField
+                        fullWidth
+                        label="Language Code"
+                        name="templates.generalAnnouncement.language"
+                        value={settings.templates?.generalAnnouncement?.language || 'en'}
+                        onChange={handleSettingsChange}
+                        margin="normal"
+                        helperText="e.g., en, es_ES"
+                      />
+                      <Typography variant="subtitle2" mt={2}>
+                        Parameters:
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        1. {'{{'}}1{'}}'}  - Employee Name<br />
+                        2. {'{{'}}2{'}}'}  - Message
+                      </Typography>
+                    </Box>
+                  )}
+                </CardContent>
+              </Card>
             </Grid>
           </Grid>
+          
+          <Box display="flex" justifyContent="flex-end" mt={3}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<SaveIcon />}
+              onClick={handleSaveSettings}
+            >
+              Save Settings
+            </Button>
+          </Box>
         </Paper>
       )}
 

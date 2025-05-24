@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosConfig';
 import {
@@ -31,12 +31,14 @@ import {
   LocationOn as LocationIcon,
   Traffic as TrafficIcon
 } from '@mui/icons-material';
+import { AuthContext } from '../../context/AuthContext';
 
 const LocationsList = () => {
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [trafficData, setTrafficData] = useState({});
+  const {  user } = useContext(AuthContext);
 
   // Fetch locations
   useEffect(() => {
@@ -132,7 +134,7 @@ const LocationsList = () => {
         <Typography variant="h4" component="h1" gutterBottom>
           Locations
         </Typography>
-        <Button
+        {user ==='admin' && <Button
           component={Link}
           to="/locations/new"
           variant="contained"
@@ -140,7 +142,7 @@ const LocationsList = () => {
           startIcon={<AddIcon />}
         >
           Add Location
-        </Button>
+        </Button>}
       </Box>
 
       {locations.length === 0 ? (
