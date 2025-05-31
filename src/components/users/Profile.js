@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
+import { LocationContext } from '../../context/LocationContext';
 import axiosInstance from '../../utils/axiosConfig';
 import {
   Avatar,
@@ -21,7 +22,11 @@ import {
   ListItemIcon,
   ListItemText,
   Switch,
-  FormControlLabel
+  FormControlLabel,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import {
   Email as EmailIcon,
@@ -30,17 +35,20 @@ import {
   Business as BusinessIcon,
   Person as PersonIcon,
   Save as SaveIcon,
-  Notifications as NotificationsIcon
+  Notifications as NotificationsIcon,
+  LocationOn as LocationIcon
 } from '@mui/icons-material';
 
 const Profile = () => {
   const { user, loadUser } = useContext(AuthContext);
+  const { locations, getLocations, loading: locationsLoading } = useContext(LocationContext);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     department: '',
     position: '',
+    defaultLocation: '',
     notificationPreferences: {
       email: true,
       whatsapp: false
@@ -55,6 +63,10 @@ const Profile = () => {
   const [passwordMode, setPasswordMode] = useState(false);
 
   useEffect(() => {
+    getLocations();
+  }, []);
+
+  useEffect(() => {
     if (user) {
       setFormData({
         ...formData,
@@ -63,6 +75,7 @@ const Profile = () => {
         phone: user.phone || '',
         department: user.department || '',
         position: user.position || '',
+        defaultLocation: user.defaultLocation?._id || '',
         notificationPreferences: user.notificationPreferences || {
           email: true,
           whatsapp: false
@@ -112,6 +125,11 @@ const Profile = () => {
           currentPassword: formData.currentPassword,
           newPassword: formData.newPassword
         };
+      } else if (formData.defaultLocation) {
+        // Update default location if it has changed
+        await axiosInstance.put('/users/default-location', {
+          locationId: formData.defaultLocation
+        });
       }
 
       await axiosInstance.put(endpoint, dataToSend);
@@ -220,6 +238,14 @@ const Profile = () => {
                       <ListItemText primary="Position" secondary={user.position} />
                     </ListItem>
                   )}
+                  {user.defaultLocation && (
+                    <ListItem>
+                      <ListItemIcon>
+                        <LocationIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Default Location" secondary={user.defaultLocation.name} />
+                    </ListItem>
+                  )}
                 </List>
               </CardContent>
             </Card>
@@ -300,6 +326,30 @@ const Profile = () => {
                             onChange={handleChange}
                             margin="normal"
                           />
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
+                            <LocationIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+                            Default Location
+                          </Typography>
+                          <FormControl fullWidth margin="normal">
+                            <InputLabel id="default-location-label">Default Location</InputLabel>
+                            <Select
+                              labelId="default-location-label"
+                              id="default-location"
+                              name="defaultLocation"
+                              value={formData.defaultLocation}
+                              onChange={handleChange}
+                              label="Default Location"
+                            >
+                              <MenuItem value="">None</MenuItem>
+                              {locations.map(location => (
+                                <MenuItem key={location._id} value={location._id}>
+                                  {location.name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
                         </Grid>
                         <Grid item xs={12}>
                           <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>

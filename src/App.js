@@ -2,11 +2,17 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 // Context Providers
 import { AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { LocationProvider } from './context/LocationContext';
+import { AbsenceProvider } from './context/AbsenceContext';
+import { HourTrackingProvider } from './context/HourTrackingContext';
+import { LanguageProvider } from './context/LanguageContext';
+import { TrafficProvider } from './context/TrafficContext';
 
 // Layout Components
 import Dashboard from './components/layout/Dashboard';
@@ -44,6 +50,18 @@ import NotificationForm from './components/notifications/NotificationForm';
 import WhatsAppDashboard from './components/whatsapp/WhatsAppDashboard';
 import WhatsAppSettings from './components/whatsapp/WhatsAppSettings';
 
+// Absence Management Pages
+import AbsenceManagement from './components/absence/AbsenceManagement';
+
+// Hour Tracking Pages
+import HourTracking from './components/hourTracking/HourTracking';
+
+// Language Settings Pages
+import LanguageSettings from './components/language/LanguageSettings';
+
+// Traffic Awareness Pages
+import TrafficAwareness from './components/traffic/TrafficAwareness';
+
 // Create a theme
 const theme = createTheme({
   palette: {
@@ -63,9 +81,14 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthProvider>
-        <NotificationProvider>
-          <LocationProvider>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <AuthProvider>
+          <NotificationProvider>
+            <LocationProvider>
+              <AbsenceProvider>
+                <HourTrackingProvider>
+                  <LanguageProvider>
+                    <TrafficProvider>
             <Router>
               <Routes>
               {/* Public Routes */}
@@ -102,15 +125,32 @@ function App() {
                 
                 {/* WhatsApp Integration Routes */}
                 <Route path="whatsapp" element={<AdminRoute><WhatsAppDashboard /></AdminRoute>} />
+                
+                {/* Absence Management Routes */}
+                <Route path="absences" element={<AbsenceManagement />} />
+                
+                {/* Hour Tracking Routes */}
+                <Route path="hours" element={<HourTracking />} />
+                
+                {/* Language Settings Routes */}
+                <Route path="language" element={<LanguageSettings />} />
+                
+                {/* Traffic Awareness Routes */}
+                <Route path="traffic" element={<TrafficAwareness />} />
               </Route>
               
               {/* Redirect to dashboard if already logged in */}
               <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Router>
-          </LocationProvider>
-        </NotificationProvider>
-      </AuthProvider>
+                    </TrafficProvider>
+                  </LanguageProvider>
+                </HourTrackingProvider>
+              </AbsenceProvider>
+            </LocationProvider>
+          </NotificationProvider>
+        </AuthProvider>
+      </LocalizationProvider>
     </ThemeProvider>
   );
 }

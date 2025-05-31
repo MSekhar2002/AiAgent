@@ -29,11 +29,16 @@ import {
   LocationOn as LocationOnIcon,
   Notifications as NotificationsIcon,
   AccountCircle,
-  Logout as LogoutIcon
+  Logout as LogoutIcon,
+  AccessTime as TimeIcon,
+  EventNote as AbsenceIcon,
+  Translate as LanguageIcon,
+  DirectionsCar as TrafficIcon,
+  WhatsApp as WhatsAppIcon
 } from '@mui/icons-material';
 import { AuthContext } from '../../context/AuthContext';
 import { NotificationContext } from '../../context/NotificationContext';
-import {Settings as  SettingsIcon} from '@mui/icons-material';
+
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -140,15 +145,19 @@ const Dashboard = () => {
   // Menu items based on user role
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+    { text: 'Hour Tracking', icon: <TimeIcon />, path: '/hours' },
+    { text: 'Absence Management', icon: <AbsenceIcon />, path: '/absences' },
     { text: 'Schedules', icon: <EventIcon />, path: '/schedules' },
+    { text: 'Traffic Awareness', icon: <TrafficIcon />, path: '/traffic' },
+    { text: 'Language Settings', icon: <LanguageIcon />, path: '/language' },
     { text: 'Locations', icon: <LocationOnIcon />, path: '/locations' },
-    { text: 'Notifications', icon: <NotificationsIcon />, path: '/notifications' }    
+    { text: 'Notifications', icon: <NotificationsIcon />, path: '/notifications' }
   ];
 
   // Add admin-only menu items
   if (user && user.role === 'admin') {
     menuItems.splice(1, 0, { text: 'Users', icon: <PeopleIcon />, path: '/users' });
-    menuItems.push({ text: 'Settings', icon: <SettingsIcon />, path: '/whatsapp' });
+    menuItems.push({ text: 'WhatsApp Integration', icon: <WhatsAppIcon />, path: '/whatsapp' });
   }
 
   return (

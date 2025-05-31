@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosConfig';
+import { LocationContext } from '../../context/LocationContext';
 import {
   Box,
   Button,
@@ -22,13 +23,15 @@ import {
 } from '@mui/material';
 import {
   Save as SaveIcon,
-  ArrowBack as ArrowBackIcon
+  ArrowBack as ArrowBackIcon,
+  LocationOn as LocationIcon
 } from '@mui/icons-material';
 
 const UserForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditMode = Boolean(id);
+  const { locations, getLocations, loading: locationsLoading } = useContext(LocationContext);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -39,6 +42,7 @@ const UserForm = () => {
     role: 'employee',
     department: '',
     position: '',
+    defaultLocation: '',
     notificationPreferences: {
       email: true,
       whatsapp: false
@@ -51,6 +55,7 @@ const UserForm = () => {
   const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
+    getLocations();
     if (isEditMode) {
       fetchUser();
     }
@@ -71,6 +76,7 @@ const UserForm = () => {
         role: userData.role || 'employee',
         department: userData.department || '',
         position: userData.position || '',
+        defaultLocation: userData.defaultLocation?._id || '',
         notificationPreferences: userData.notificationPreferences || {
           email: true,
           whatsapp: false
@@ -154,6 +160,7 @@ const UserForm = () => {
         role: formData.role,
         department: formData.department,
         position: formData.position,
+        defaultLocation: formData.defaultLocation || undefined,
         notificationPreferences: formData.notificationPreferences
       };
       
@@ -311,6 +318,28 @@ const UserForm = () => {
                 value={formData.position}
                 onChange={handleChange}
               />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="default-location-label">Default Location</InputLabel>
+                <Select
+                  labelId="default-location-label"
+                  name="defaultLocation"
+                  value={formData.defaultLocation}
+                  onChange={handleChange}
+                  label="Default Location"
+                >
+                  <MenuItem value="">None</MenuItem>
+                  {locations.map(location => (
+                    <MenuItem key={location._id} value={location._id}>
+                      {location.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText>
+                  User's default location for traffic and commute calculations
+                </FormHelperText>
+              </FormControl>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h6" gutterBottom>

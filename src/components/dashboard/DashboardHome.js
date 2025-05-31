@@ -31,7 +31,10 @@ import {
   Traffic as TrafficIcon,
   AccessTime as AccessTimeIcon,
   Speed as SpeedIcon,
-  Visibility as VisibilityIcon
+  Visibility as VisibilityIcon,
+  EventNote as AbsenceIcon,
+  Translate as LanguageIcon,
+  DirectionsCar as CommuteIcon
 } from '@mui/icons-material';
 import { AuthContext } from '../../context/AuthContext';
 import { NotificationContext } from '../../context/NotificationContext';
@@ -240,6 +243,182 @@ const DashboardHome = () => {
           </Card>
         </Grid>
       </Grid>
+
+      {/* Quick Access Cards */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h6" component="h2" gutterBottom>
+          Quick Access
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={6} sm={4} md={3} lg={2}>
+            <Card 
+              component={Link} 
+              to="/hours" 
+              sx={{ 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                p: 2,
+                textDecoration: 'none',
+                color: 'inherit',
+                bgcolor: '#e3f2fd',
+                transition: 'transform 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: 3
+                }
+              }}
+            >
+              <AccessTimeIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
+              <Typography variant="body1" align="center">
+                Hour Tracking
+              </Typography>
+            </Card>
+          </Grid>
+          
+          <Grid item xs={6} sm={4} md={3} lg={2}>
+            <Card 
+              component={Link} 
+              to="/absences" 
+              sx={{ 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                p: 2,
+                textDecoration: 'none',
+                color: 'inherit',
+                bgcolor: '#e8f5e9',
+                transition: 'transform 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: 3
+                }
+              }}
+            >
+              <AbsenceIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
+              <Typography variant="body1" align="center">
+                Absence Management
+              </Typography>
+            </Card>
+          </Grid>
+          
+          <Grid item xs={6} sm={4} md={3} lg={2}>
+            <Card 
+              component={Link} 
+              to="/language" 
+              sx={{ 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                p: 2,
+                textDecoration: 'none',
+                color: 'inherit',
+                bgcolor: '#fff3e0',
+                transition: 'transform 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: 3
+                }
+              }}
+            >
+              <LanguageIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
+              <Typography variant="body1" align="center">
+                Language Settings
+              </Typography>
+            </Card>
+          </Grid>
+          
+          <Grid item xs={6} sm={4} md={3} lg={2}>
+            <Card 
+              component={Link} 
+              to="/traffic" 
+              sx={{ 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                p: 2,
+                textDecoration: 'none',
+                color: 'inherit',
+                bgcolor: '#f3e5f5',
+                transition: 'transform 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: 3
+                }
+              }}
+            >
+              <CommuteIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
+              <Typography variant="body1" align="center">
+                Traffic Awareness
+              </Typography>
+            </Card>
+          </Grid>
+          
+          <Grid item xs={6} sm={4} md={3} lg={2}>
+            <Card 
+              component={Link} 
+              to="/schedules" 
+              sx={{ 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                p: 2,
+                textDecoration: 'none',
+                color: 'inherit',
+                bgcolor: '#e8eaf6',
+                transition: 'transform 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: 3
+                }
+              }}
+            >
+              <EventIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
+              <Typography variant="body1" align="center">
+                Schedules
+              </Typography>
+            </Card>
+          </Grid>
+          
+          <Grid item xs={6} sm={4} md={3} lg={2}>
+            <Card 
+              component={Link} 
+              to="/notifications" 
+              sx={{ 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                p: 2,
+                textDecoration: 'none',
+                color: 'inherit',
+                bgcolor: '#fce4ec',
+                transition: 'transform 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: 3
+                }
+              }}
+            >
+              <NotificationsIcon color="primary" sx={{ fontSize: 40, mb: 1 }} />
+              <Typography variant="body1" align="center">
+                Notifications
+              </Typography>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
 
       <Grid container spacing={3}>
         {/* Upcoming Schedules */}

@@ -9,11 +9,17 @@ import {
   Paper,
   Alert,
   InputAdornment,
-  IconButton,
-  Grid
+   IconButton,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Visibility, VisibilityOff, LocationOn } from '@mui/icons-material';
 import { AuthContext } from '../../context/AuthContext';
+import { LocationContext } from '../../context/LocationContext';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -21,13 +27,15 @@ const Register = () => {
     email: '',
     phone: '',
     password: '',
-    password2: ''
+    password2: '',
+    defaultLocation: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   
   const { register, error, isAuthenticated, clearErrors } = useContext(AuthContext);
+  const { locations, getLocations, loading: locationsLoading } = useContext(LocationContext);
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -36,6 +44,9 @@ const Register = () => {
       navigate('/');
     }
     
+    // Load locations for dropdown
+    getLocations();
+    
     // Clear form errors when component unmounts
     return () => {
       clearErrors();
@@ -43,7 +54,7 @@ const Register = () => {
     // eslint-disable-next-line
   }, [isAuthenticated]);
   
-  const { name, email, phone, password, password2 } = formData;
+  const { name, email, phone, password, password2, defaultLocation } = formData;
   
   const onChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -96,7 +107,8 @@ const Register = () => {
         name,
         email,
         phone,
-        password
+        password,
+        defaultLocation: defaultLocation || undefined
       });
     }
   };
@@ -173,6 +185,31 @@ const Register = () => {
               error={!!formErrors.phone}
               helperText={formErrors.phone || 'Optional - Include country code for WhatsApp'}
             />
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="default-location-label">Default Location</InputLabel>
+              <Select
+                labelId="default-location-label"
+                name="defaultLocation"
+                value={defaultLocation}
+                onChange={onChange}
+                label="Default Location"
+                startAdornment={
+                  <InputAdornment position="start">
+                    <LocationOn />
+                  </InputAdornment>
+                }
+              >
+                <MenuItem value="">None</MenuItem>
+                {locations && locations.map(location => (
+                  <MenuItem key={location._id} value={location._id}>
+                    {location.name}
+                  </MenuItem>
+                ))}
+              </Select>
+              <FormHelperText>
+                Select your default location for traffic and commute calculations
+              </FormHelperText>
+            </FormControl>
             <TextField
               margin="normal"
               required
