@@ -139,7 +139,7 @@ const AbsenceManagement = () => {
                 textColor="primary"
               >
                 <Tab label="My Absences" />
-                {(isAdmin=="admin" && <Tab label="Pending Approvals" />}
+                {(isAdmin=="admin") && <Tab label="Pending Approvals" />}
               </Tabs>
             </Box>
 
@@ -147,7 +147,7 @@ const AbsenceManagement = () => {
               <AbsenceList absences={userAbsences} />
             </TabPanel>
 
-            {(isAdmin=="admin" && (
+            {(isAdmin=="admin") && (
               <TabPanel value={tabValue} index={1}>
                 <AbsenceApprovals 
                   absences={pendingApprovals} 
