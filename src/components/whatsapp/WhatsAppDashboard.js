@@ -264,7 +264,7 @@ const WhatsAppDashboard = () => {
                       primary={
                         <Box display="flex" justifyContent="space-between" alignItems="center">
                           <Typography variant="subtitle1" component="span">
-                            {conversation.user.name} ({conversation.user.phone})
+                            {conversation?.user?.name} ({conversation?.user?.phone})
                           </Typography>
                           <Chip 
                             size="small" 
