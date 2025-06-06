@@ -115,6 +115,7 @@ export const AuthProvider = ({ children }) => {
         loading: state.loading,
         user: state.user,
         error: state.error,
+        isAdmin:state.user?.role,
         register,
         login,
         logout,

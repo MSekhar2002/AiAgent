@@ -45,7 +45,9 @@ const UserForm = () => {
     defaultLocation: '',
     notificationPreferences: {
       email: true,
-      whatsapp: false
+      whatsapp: false,
+      dailyBriefing: false,
+      briefingTime: '08:00'
     }
   });
   
@@ -79,7 +81,9 @@ const UserForm = () => {
         defaultLocation: userData.defaultLocation?._id || '',
         notificationPreferences: userData.notificationPreferences || {
           email: true,
-          whatsapp: false
+          whatsapp: false,
+          dailyBriefing: false,
+          briefingTime: '08:00'
         }
       });
       
@@ -373,6 +377,46 @@ const UserForm = () => {
                   Phone number is required for WhatsApp notifications
                 </FormHelperText>
               )}
+              
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle1" gutterBottom>
+                  Daily Briefing
+                </Typography>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={formData.notificationPreferences.dailyBriefing}
+                          onChange={handleNotificationChange}
+                          name="dailyBriefing"
+                          color="primary"
+                        />
+                      }
+                      label="Enable Daily Briefing"
+                    />
+                  </Grid>
+                  {formData.notificationPreferences.dailyBriefing && (
+                    <Grid item>
+                      <TextField
+                        label="Briefing Time"
+                        type="time"
+                        value={formData.notificationPreferences.briefingTime}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            notificationPreferences: {
+                              ...formData.notificationPreferences,
+                              briefingTime: e.target.value
+                            }
+                          });
+                        }}
+                        InputLabelProps={{ shrink: true }}
+                      />
+                    </Grid>
+                  )}
+                </Grid>
+              </Box>
             </Grid>
           </Grid>
 

@@ -39,7 +39,7 @@ function TabPanel(props) {
 }
 
 const AbsenceManagement = () => {
-  const { user, isAdmin } = useContext(AuthContext);
+  let { user, isAdmin } = useContext(AuthContext);
   const { 
     userAbsences, 
     pendingApprovals,
@@ -47,7 +47,7 @@ const AbsenceManagement = () => {
     error, 
     success,
     getUserAbsences,
-    getPendingApprovals,
+    getPendingAbsences,
     clearErrors,
     clearSuccess
   } = useContext(AbsenceContext);
@@ -55,12 +55,14 @@ const AbsenceManagement = () => {
   const [tabValue, setTabValue] = useState(0);
   const [showForm, setShowForm] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-
+ if(!isAdmin){
+  isAdmin = user?.role || 'user'
+ }
   // Load user absences on component mount
   useEffect(() => {
     getUserAbsences();
     if (isAdmin) {
-      getPendingApprovals();
+      getPendingAbsences();
     }
   }, []);
 
@@ -87,7 +89,7 @@ const AbsenceManagement = () => {
   };
 
   const handleApprovalSuccess = () => {
-    getPendingApprovals();
+    getPendingAbsences();
     getUserAbsences();
   };
 

@@ -51,7 +51,9 @@ const Profile = () => {
     defaultLocation: '',
     notificationPreferences: {
       email: true,
-      whatsapp: false
+      whatsapp: false,
+      dailyBriefing: false,
+      briefingTime: '08:00'
     },
     currentPassword: '',
     newPassword: '',
@@ -78,7 +80,9 @@ const Profile = () => {
         defaultLocation: user.defaultLocation?._id || '',
         notificationPreferences: user.notificationPreferences || {
           email: true,
-          whatsapp: false
+          whatsapp: false,
+          dailyBriefing: false,
+          briefingTime: '08:00'
         }
       });
     }
@@ -111,7 +115,10 @@ const Profile = () => {
         phone: formData.phone,
         department: formData.department,
         position: formData.position,
-        notificationPreferences: formData.notificationPreferences
+        notificationPreferences: {
+          email: formData.notificationPreferences.email,
+          whatsapp: formData.notificationPreferences.whatsapp
+        }
       };
 
       if (passwordMode) {
@@ -125,11 +132,19 @@ const Profile = () => {
           currentPassword: formData.currentPassword,
           newPassword: formData.newPassword
         };
-      } else if (formData.defaultLocation) {
-        // Update default location if it has changed
-        await axiosInstance.put('/users/default-location', {
-          locationId: formData.defaultLocation
+      } else {
+        // Update daily briefing preferences
+        await axiosInstance.put('/api/daily-briefing/preferences', {
+          dailyBriefing: formData.notificationPreferences.dailyBriefing,
+          briefingTime: formData.notificationPreferences.briefingTime
         });
+        
+        if (formData.defaultLocation) {
+          // Update default location if it has changed
+          await axiosInstance.put('/users/default-location', {
+            locationId: formData.defaultLocation
+          });
+        }
       }
 
       await axiosInstance.put(endpoint, dataToSend);
@@ -378,6 +393,45 @@ const Profile = () => {
                             }
                             label="WhatsApp Notifications"
                           />
+                          <Box sx={{ mt: 2 }}>
+                            <Typography variant="subtitle1" gutterBottom>
+                              Daily Briefing
+                            </Typography>
+                            <Grid container spacing={2} alignItems="center">
+                              <Grid item>
+                                <FormControlLabel
+                                  control={
+                                    <Switch
+                                      checked={formData.notificationPreferences.dailyBriefing}
+                                      onChange={handleNotificationChange}
+                                      name="dailyBriefing"
+                                      color="primary"
+                                    />
+                                  }
+                                  label="Enable Daily Briefing"
+                                />
+                              </Grid>
+                              {formData.notificationPreferences.dailyBriefing && (
+                                <Grid item>
+                                  <TextField
+                                    label="Briefing Time"
+                                    type="time"
+                                    value={formData.notificationPreferences.briefingTime}
+                                    onChange={(e) => {
+                                      setFormData({
+                                        ...formData,
+                                        notificationPreferences: {
+                                          ...formData.notificationPreferences,
+                                          briefingTime: e.target.value
+                                        }
+                                      });
+                                    }}
+                                    InputLabelProps={{ shrink: true }}
+                                  />
+                                </Grid>
+                              )}
+                            </Grid>
+                          </Box>
                         </Grid>
                       </Grid>
                     </>
