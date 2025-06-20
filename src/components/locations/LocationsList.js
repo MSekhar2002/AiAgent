@@ -134,7 +134,7 @@ const LocationsList = () => {
         <Typography variant="h4" component="h1" gutterBottom>
           Locations
         </Typography>
-        {user ==='admin' && <Button
+        {user?.role ==='admin' && <Button
           component={Link}
           to="/locations/new"
           variant="contained"

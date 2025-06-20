@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -78,8 +78,70 @@ const theme = createTheme({
 });
 
 function App() {
+  useEffect(() => {
+    // Add a small delay to ensure React is fully mounted
+    const timer = setTimeout(() => {
+      // Define the function on window first
+      window.googleTranslateElementInit = () => {
+        try {
+          if (window.google && window.google.translate) {
+            new window.google.translate.TranslateElement(
+              {
+                pageLanguage: "en",
+                includedLanguages: "en,fr",
+                layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false,
+              },
+              "google_translate_element"
+            );
+          }
+        } catch (error) {
+          console.log('Google Translate loading error:', error);
+        }
+      };
+  
+      // Check if script already exists
+      if (!document.querySelector('script[src*="translate.google.com"]')) {
+        const addScript = document.createElement("script");
+        addScript.setAttribute(
+          "src",
+          "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+        );
+        addScript.async = true;
+        addScript.onerror = () => console.log('Failed to load Google Translate script');
+        document.body.appendChild(addScript);
+      }
+    }, 1000); // 1 second delay
+  
+    return () => clearTimeout(timer);
+  }, []);
   return (
     <ThemeProvider theme={theme}>
+  <style>
+    {`
+      .goog-te-gadget img {
+        display: none; 
+      }
+
+      .skiptranslate iframe {
+            display: none !important;
+          }
+
+        .goog-te-gadget-simple{
+            border-radius: 5px
+        }
+
+        .goog-te-gadget-simple span a span {
+        margin-right:5px
+        }
+    `}
+  </style>    
+<div id="google_translate_element" style={{
+  position: 'absolute',
+  top: '70px',
+  right: '10px',
+  zIndex: 9999
+}}></div>
       <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <AuthProvider>
