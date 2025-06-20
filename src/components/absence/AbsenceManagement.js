@@ -61,7 +61,7 @@ const AbsenceManagement = () => {
   // Load user absences on component mount
   useEffect(() => {
     getUserAbsences();
-    if (isAdmin) {
+    if (isAdmin=="admin") {
       getPendingAbsences();
     }
   }, []);
@@ -139,7 +139,7 @@ const AbsenceManagement = () => {
                 textColor="primary"
               >
                 <Tab label="My Absences" />
-                {isAdmin && <Tab label="Pending Approvals" />}
+                {(isAdmin=="admin") && <Tab label="Pending Approvals" />}
               </Tabs>
             </Box>
 
@@ -147,7 +147,7 @@ const AbsenceManagement = () => {
               <AbsenceList absences={userAbsences} />
             </TabPanel>
 
-            {isAdmin && (
+            {(isAdmin=="admin") && (
               <TabPanel value={tabValue} index={1}>
                 <AbsenceApprovals 
                   absences={pendingApprovals} 
