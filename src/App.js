@@ -1,12 +1,14 @@
-import React, {useEffect} from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, {useContext, useEffect} from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import TeamManagement from './components/teams/TeamManagement';
+import TeamSetup from './components/auth/TeamSetup';
 
 // Context Providers
-import { AuthProvider } from './context/AuthContext';
+import { AuthContext, AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { LocationProvider } from './context/LocationContext';
 import { AbsenceProvider } from './context/AbsenceContext';
@@ -61,6 +63,8 @@ import LanguageSettings from './components/language/LanguageSettings';
 
 // Traffic Awareness Pages
 import TrafficAwareness from './components/traffic/TrafficAwareness';
+import { TeamContext, TeamProvider } from './context/TeamContext';
+import UserManagement from './components/users/UserManagement';
 
 // Create a theme
 const theme = createTheme({
@@ -137,9 +141,9 @@ function App() {
     `}
   </style>    
 <div id="google_translate_element" style={{
-  position: 'absolute',
-  top: '70px',
-  right: '10px',
+  position: 'fixed',
+  top: '18px',
+  right: '145px',
   zIndex: 9999
 }}></div>
       <CssBaseline />
@@ -151,20 +155,30 @@ function App() {
                 <HourTrackingProvider>
                   <LanguageProvider>
                     <TrafficProvider>
+                      <TeamProvider>
             <Router>
               <Routes>
               {/* Public Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              
-              {/* Private Routes */}
-              <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>}>
+              <Route path="/team-setup" element={
+                <PrivateRoute>
+                  <TeamSetup />
+                </PrivateRoute>
+              } />
+              <Route path="/" element={
+                <PrivateRoute>
+                  <TeamRequiredRoute>
+                    <Dashboard />
+                  </TeamRequiredRoute>
+                </PrivateRoute>
+              }>
                 {/* Dashboard Home */}
                 <Route index element={<DashboardHome />} />
                 
                 {/* User Routes */}
                 <Route path="profile" element={<Profile />} />
-                <Route path="users" element={<AdminRoute><UsersList /></AdminRoute>} />
+                {/* <Route path="users" element={<AdminRoute><UsersList /></AdminRoute>} /> */}
                 <Route path="users/new" element={<AdminRoute><UserForm /></AdminRoute>} />
                 <Route path="users/:id" element={<AdminRoute><UserForm /></AdminRoute>} />
                 
@@ -199,12 +213,22 @@ function App() {
                 
                 {/* Traffic Awareness Routes */}
                 <Route path="traffic" element={<TrafficAwareness />} />
+              {/* Team Management Routes */}
+              // Update the users route to be accessible by all team members
+              // (The admin-only restriction will be handled within the component)
+              <Route path="users" element={<TeamRequiredRoute><UserManagement /></TeamRequiredRoute>} />
+              <Route path="users/new" element={<TeamRequiredRoute><AdminRoute><UserForm /></AdminRoute></TeamRequiredRoute>} />
+              <Route path="users/:id" element={<TeamRequiredRoute><AdminRoute><UserForm /></AdminRoute></TeamRequiredRoute>} />
+              
+              // Remove the separate teams route
+              // <Route path="teams" element={<TeamManagement />} /> - Remove this line
+              
               </Route>
               
               {/* Redirect to dashboard if already logged in */}
               <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
-            </Router>
+            </Router></TeamProvider>
                     </TrafficProvider>
                   </LanguageProvider>
                 </HourTrackingProvider>
@@ -216,5 +240,24 @@ function App() {
     </ThemeProvider>
   );
 }
+
+// Add a new route guard for team requirement
+const TeamRequiredRoute = ({ children }) => {
+  const { team, loading: teamLoading, error } = useContext(TeamContext);
+  const { user, loading: authLoading, isAuthenticated } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Only navigate when both auth and team loading are complete
+    if (!authLoading && !teamLoading && isAuthenticated && !team && (error || team === null)) {
+      navigate('/team-setup');
+    }
+  }, [team, teamLoading, authLoading, error, navigate, isAuthenticated]);
+
+  // Show loading while either auth or team is loading
+  // if (authLoading || teamLoading) return null;
+  
+  return team ? children : null;
+};
 
 export default App;

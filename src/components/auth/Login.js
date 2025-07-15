@@ -9,7 +9,8 @@ import {
   Paper,
   Alert,
   InputAdornment,
-  IconButton
+  IconButton,
+  Grid
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { AuthContext } from '../../context/AuthContext';
@@ -25,9 +26,11 @@ const Login = () => {
   const { login, error, isAuthenticated, clearErrors } = useContext(AuthContext);
   const navigate = useNavigate();
   
+  // In Login.js, modify the useEffect around line 25
   useEffect(() => {
-    // Redirect if already authenticated
+    // Only redirect after both authentication and team status are determined
     if (isAuthenticated) {
+      // Let the App routing handle team checking
       navigate('/');
     }
     
@@ -35,8 +38,7 @@ const Login = () => {
     return () => {
       clearErrors();
     };
-    // eslint-disable-next-line
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate, clearErrors]);
   
   const { email, password } = formData;
   
@@ -155,6 +157,17 @@ const Login = () => {
             >
               Sign In
             </Button>
+            <Grid container justifyContent="center">
+              <Grid item>
+                <Button
+                  variant="text"
+                  onClick={() => navigate('/register')}
+                  sx={{ textTransform: 'none' }}
+                >
+                  Don't have an account? Sign in
+                </Button>
+              </Grid>
+            </Grid>
           </Box>
         </Paper>
       </Box>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosConfig';
 import { LocationContext } from '../../context/LocationContext';
+import { TeamContext } from '../../context/TeamContext';
 import {
   Box,
   Button,
@@ -32,6 +33,7 @@ const UserForm = () => {
   const navigate = useNavigate();
   const isEditMode = Boolean(id);
   const { locations, getLocations, loading: locationsLoading } = useContext(LocationContext);
+  const { team } = useContext(TeamContext);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -306,13 +308,23 @@ const UserForm = () => {
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Department"
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
-              />
+              <FormControl fullWidth>
+                <InputLabel id="department-label">Department</InputLabel>
+                <Select
+                  labelId="department-label"
+                  name="department"
+                  value={formData?.department}
+                  onChange={handleChange}
+                  label="Department"
+                >
+                  <MenuItem value="">None</MenuItem>
+                  {team?.departments?.map((department) => (
+                    <MenuItem key={department} value={department}>
+                      {department}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField

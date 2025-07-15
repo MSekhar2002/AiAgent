@@ -279,7 +279,7 @@ const Register = () => {
                   onClick={() => navigate('/login')}
                   sx={{ textTransform: 'none' }}
                 >
-                  Already have an account? Sign in
+                  Already have an account? Log in
                 </Button>
               </Grid>
             </Grid>

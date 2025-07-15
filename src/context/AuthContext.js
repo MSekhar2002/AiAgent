@@ -2,6 +2,7 @@ import React, { createContext, useReducer, useEffect } from 'react';
 import axiosInstance from '../utils/axiosConfig';
 import authReducer from '../reducers/authReducer';
 import setAuthToken from '../utils/setAuthToken';
+import { useNavigate } from 'react-router-dom';
 
 // Create context
 export const AuthContext = createContext();
@@ -18,7 +19,6 @@ const initialState = {
 // Provider component
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
-
   // Load user
   const loadUser = async () => {
     if (localStorage.token) {
@@ -54,7 +54,8 @@ export const AuthProvider = ({ children }) => {
         type: 'REGISTER_SUCCESS',
         payload: res.data
       });
-
+      // window.location.href = "/login";
+      localStorage.setItem('token', res.data.token);
       loadUser();
     } catch (err) {
       dispatch({
@@ -65,6 +66,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Login user
+  // In AuthContext.js, modify the login function around line 60
   const login = async (email, password) => {
     const config = {
       headers: {
@@ -83,7 +85,11 @@ export const AuthProvider = ({ children }) => {
       });
       
       localStorage.setItem('token', res.data.token);
-      loadUser();
+      await loadUser();
+      
+      // Don't navigate here - let the routing logic handle it
+      // The TeamRequiredRoute will handle team checking and navigation
+      
     } catch (err) {
       dispatch({
         type: 'LOGIN_FAIL',

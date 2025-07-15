@@ -17,7 +17,9 @@ import {
   OutlinedInput,
   Checkbox,
   ListItemText,
-  Grid
+  Grid,
+  FormControlLabel,
+  Switch
 } from '@mui/material';
 import { NotificationContext } from '../../context/NotificationContext';
 import { AuthContext } from '../../context/AuthContext';
@@ -28,10 +30,11 @@ const NotificationForm = () => {
     type: 'email',
     recipients: [],
     subject: '',
-    content: '',
+    message: '',
     relatedTo: 'other',
     relatedId: ''
   });
+  const [isAnnouncement, setIsAnnouncement] = useState(false);
   const [users, setUsers] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [locations, setLocations] = useState([]);
@@ -40,7 +43,7 @@ const NotificationForm = () => {
   const [submitError, setSubmitError] = useState('');
   const [submitSuccess, setSubmitSuccess] = useState(false);
   
-  const { createNotification } = useContext(NotificationContext);
+  const { createNotification, sendAnnouncement } = useContext(NotificationContext);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -53,7 +56,7 @@ const NotificationForm = () => {
         setUsers(usersRes.data);
         
         // Fetch schedules for related items
-        const schedulesRes = await axiosInstance.get('schedules');
+        const schedulesRes = await axiosInstance.get('/schedules');
         setSchedules(schedulesRes.data);
         
         // Fetch locations for related items
@@ -70,7 +73,7 @@ const NotificationForm = () => {
     fetchData();
   }, []);
 
-  const { type, recipients, subject, content, relatedTo, relatedId } = formData;
+  const { type, recipients, subject, message, relatedTo, relatedId } = formData;
 
   const onChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -81,6 +84,16 @@ const NotificationForm = () => {
         ...formErrors,
         [e.target.name]: ''
       });
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (recipients.length === users.length) {
+      // If all are selected, deselect all
+      setFormData({ ...formData, recipients: [] });
+    } else {
+      // Select all users
+      setFormData({ ...formData, recipients: users.map(user => user._id) });
     }
   };
 
@@ -99,11 +112,11 @@ const NotificationForm = () => {
       errors.subject = 'Subject is required';
     }
     
-    if (!content) {
-      errors.content = 'Content is required';
+    if (!message) {
+      errors.message = 'Content is required';
     }
     
-    if (relatedTo !== 'other' && !relatedId) {
+    if (!isAnnouncement && relatedTo !== 'other' && !relatedId) {
       errors.relatedId = 'Related item is required when relation type is specified';
     }
     
@@ -119,13 +132,22 @@ const NotificationForm = () => {
     if (validateForm()) {
       setLoading(true);
       try {
-        await createNotification(formData);
+        let result;
+        
+        if (isAnnouncement) {
+          // Use announcement endpoint
+          result = await sendAnnouncement(formData);
+        } else {
+          // Use regular notification endpoint
+          result = await createNotification(formData);
+        }
+        
         setSubmitSuccess(true);
         setTimeout(() => {
           navigate('/notifications');
         }, 2000);
       } catch (err) {
-        setSubmitError(err.response?.data.msg || 'Failed to create notification');
+        setSubmitError(err.response?.data.msg || 'Failed to send notification');
       } finally {
         setLoading(false);
       }
@@ -161,7 +183,7 @@ const NotificationForm = () => {
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
-        Create Notification
+        {isAnnouncement ? 'Send Announcement' : 'Create Notification'}
       </Typography>
 
       <Paper elevation={2} sx={{ p: 3 }}>
@@ -173,12 +195,29 @@ const NotificationForm = () => {
 
         {submitSuccess && (
           <Alert severity="success" sx={{ mb: 3 }}>
-            Notification created successfully!
+            {isAnnouncement ? 'Announcement sent successfully!' : 'Notification created successfully!'}
           </Alert>
         )}
 
         <Box component="form" onSubmit={onSubmit}>
           <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={isAnnouncement}
+                    onChange={(e) => {
+                      setIsAnnouncement(e.target.checked);
+                      if (e.target.checked) {
+                        setFormData({ ...formData, relatedTo: 'announcement' });
+                      }
+                    }}
+                  />
+                }
+                label="Send as Announcement"
+              />
+            </Grid>
+
             <Grid item xs={12} md={6}>
               <FormControl fullWidth error={!!formErrors.type}>
                 <InputLabel id="type-label">Notification Type</InputLabel>
@@ -198,26 +237,28 @@ const NotificationForm = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth error={!!formErrors.relatedTo}>
-                <InputLabel id="related-to-label">Related To</InputLabel>
-                <Select
-                  labelId="related-to-label"
-                  id="relatedTo"
-                  name="relatedTo"
-                  value={relatedTo}
-                  label="Related To"
-                  onChange={onChange}
-                >
-                  <MenuItem value="schedule">Schedule</MenuItem>
-                  <MenuItem value="announcement">Announcement</MenuItem>
-                  <MenuItem value="traffic">Traffic</MenuItem>
-                  <MenuItem value="other">Other</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
+            {!isAnnouncement && (
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth error={!!formErrors.relatedTo}>
+                  <InputLabel id="related-to-label">Related To</InputLabel>
+                  <Select
+                    labelId="related-to-label"
+                    id="relatedTo"
+                    name="relatedTo"
+                    value={relatedTo}
+                    label="Related To"
+                    onChange={onChange}
+                  >
+                    <MenuItem value="schedule">Schedule</MenuItem>
+                    <MenuItem value="announcement">Announcement</MenuItem>
+                    <MenuItem value="traffic">Traffic</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            )}
 
-            {relatedTo !== 'other' && (
+            {!isAnnouncement && relatedTo !== 'other' && (
               <Grid item xs={12}>
                 <FormControl fullWidth error={!!formErrors.relatedId}>
                   <InputLabel id="related-id-label">Related Item</InputLabel>
@@ -266,6 +307,16 @@ const NotificationForm = () => {
                     </Box>
                   )}
                 >
+                  <MenuItem>
+                    <Button 
+                      variant="outlined" 
+                      size="small" 
+                      onClick={handleSelectAll}
+                      sx={{ mb: 1 }}
+                    >
+                      {recipients.length === users.length ? 'Deselect All' : 'Select All'}
+                    </Button>
+                  </MenuItem>
                   {users.map((user) => (
                     <MenuItem key={user._id} value={user._id}>
                       <Checkbox checked={recipients.indexOf(user._id) > -1} />
@@ -293,13 +344,13 @@ const NotificationForm = () => {
               <TextField
                 fullWidth
                 label="Content"
-                name="content"
-                value={content}
+                name="message"
+                value={message}
                 onChange={onChange}
                 multiline
                 rows={6}
-                error={!!formErrors.content}
-                helperText={formErrors.content}
+                error={!!formErrors.message}
+                helperText={formErrors.message}
               />
             </Grid>
 
@@ -317,7 +368,8 @@ const NotificationForm = () => {
                   variant="contained" 
                   disabled={loading}
                 >
-                  {loading ? <CircularProgress size={24} /> : 'Send Notification'}
+                  {loading ? <CircularProgress size={24} /> : 
+                    isAnnouncement ? 'Send Announcement' : 'Send Notification'}
                 </Button>
               </Box>
             </Grid>

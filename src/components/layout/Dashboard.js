@@ -38,6 +38,8 @@ import {
 } from '@mui/icons-material';
 import { AuthContext } from '../../context/AuthContext';
 import { NotificationContext } from '../../context/NotificationContext';
+// Add import
+import { Groups as TeamIcon } from '@mui/icons-material';
 
 const drawerWidth = 240;
 
@@ -143,20 +145,22 @@ const Dashboard = () => {
   const unreadCount = notifications.filter(n => n.status !== 'read').length;
 
   // Menu items based on user role
+  // Add team management to menu items (inside the Dashboard component)
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-    { text: 'Hour Tracking', icon: <TimeIcon />, path: '/hours' },
+    // { text: 'Hour Tracking', icon: <TimeIcon />, path: '/hours' },
     { text: 'Absence Management', icon: <AbsenceIcon />, path: '/absences' },
     { text: 'Schedules', icon: <EventIcon />, path: '/schedules' },
     { text: 'Traffic Awareness', icon: <TrafficIcon />, path: '/traffic' },
-    { text: 'Language Settings', icon: <LanguageIcon />, path: '/language' },
+    // { text: 'Language Settings', icon: <LanguageIcon />, path: '/language' },
     { text: 'Locations', icon: <LocationOnIcon />, path: '/locations' },
-    { text: 'Notifications', icon: <NotificationsIcon />, path: '/notifications' }
+    { text: 'Notifications', icon: <NotificationsIcon />, path: '/notifications' },
+    // { text: 'Team Management', icon: <TeamIcon />, path: '/teams' } // Add this line
   ];
 
   // Add admin-only menu items
   if (user && user.role === 'admin') {
-    menuItems.splice(1, 0, { text: 'Users', icon: <PeopleIcon />, path: '/users' });
+    menuItems.splice(1, 0, { text: 'Team & User Management', icon: <PeopleIcon />, path: '/users' });
     menuItems.push({ text: 'WhatsApp Integration', icon: <WhatsAppIcon />, path: '/whatsapp' });
   }
 

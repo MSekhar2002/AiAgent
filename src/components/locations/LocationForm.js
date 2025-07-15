@@ -85,7 +85,7 @@ const LocationForm = () => {
             city: locationData.city || '',
             state: locationData.state || '',
             zipCode: locationData.zipCode || '',
-            country: locationData.country || 'USA',
+            country: locationData.country || '',
             description: locationData.description || '',
             coordinates: {
               latitude: locationData.coordinates?.latitude || '',

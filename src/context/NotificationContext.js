@@ -74,7 +74,7 @@ export const NotificationProvider = ({ children }) => {
     }
   };
 
-  // Create notification
+  // Create notification (regular notification)
   const createNotification = async (formData) => {
     const config = {
       headers: {
@@ -85,7 +85,7 @@ export const NotificationProvider = ({ children }) => {
     try {
       dispatch({ type: 'SET_LOADING' });
       
-      const res = await axiosInstance.post('/notifications', formData, config);
+      const res = await axiosInstance.post('/notifications/announcement', formData, config);
 
       dispatch({
         type: 'CREATE_NOTIFICATION',
@@ -97,6 +97,42 @@ export const NotificationProvider = ({ children }) => {
       dispatch({
         type: 'NOTIFICATION_ERROR',
         payload: err.response?.data.msg || 'Failed to create notification'
+      });
+      throw err;
+    }
+  };
+
+  // Send announcement (specific for announcements)
+  const sendAnnouncement = async (formData) => {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+
+    try {
+      dispatch({ type: 'SET_LOADING' });
+      
+      // Transform the data to match announcement endpoint expectations
+      const announcementData = {
+        type: formData.type,
+        recipients: formData.recipients,
+        message: formData.content,
+        subject: formData.subject
+      };
+      
+      const res = await axiosInstance.post('/notifications/announcement', announcementData, config);
+
+      dispatch({
+        type: 'CREATE_NOTIFICATION',
+        payload: res.data
+      });
+
+      return res.data;
+    } catch (err) {
+      dispatch({
+        type: 'NOTIFICATION_ERROR',
+        payload: err.response?.data.msg || 'Failed to send announcement'
       });
       throw err;
     }
@@ -141,7 +177,7 @@ export const NotificationProvider = ({ children }) => {
     try {
       dispatch({ type: 'SET_LOADING' });
       
-      const res = await axiosInstance.post('/notifications/traffic-alerts');
+      const res = await axiosInstance.get('/notifications/traffic-alerts');
 
       dispatch({
         type: 'SEND_TRAFFIC_ALERTS',
@@ -172,6 +208,7 @@ export const NotificationProvider = ({ children }) => {
         getAdminNotifications,
         getNotification,
         createNotification,
+        sendAnnouncement,
         markAsRead,
         deleteNotification,
         sendTrafficAlerts,
