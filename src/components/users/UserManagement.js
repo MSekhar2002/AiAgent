@@ -292,14 +292,14 @@ const UserManagement = () => {
               Team Members ({members.length})
             </Typography>
             <Box>
-              <Button 
+              {/* <Button 
                 variant="outlined" 
                 startIcon={<PersonAddIcon />}
-                onClick={() => {/* Open invite dialog */}}
+                onClick={() => }
                 sx={{ mr: 1 }}
               >
                 Invite User
-              </Button>
+              </Button> */}
               <Button 
                 variant="outlined" 
                 startIcon={<CopyIcon />}
