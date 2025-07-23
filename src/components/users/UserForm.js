@@ -45,6 +45,7 @@ const UserForm = () => {
     department: '',
     position: '',
     defaultLocation: '',
+    team:'',
     notificationPreferences: {
       email: true,
       whatsapp: false,
@@ -76,6 +77,7 @@ const UserForm = () => {
         email: userData.email || '',
         password: '',
         confirmPassword: '',
+        team: userData.team || '',
         phone: userData.phone || '',
         role: userData.role || 'employee',
         department: userData.department || '',
@@ -164,6 +166,7 @@ const UserForm = () => {
         email: formData.email,
         phone: formData.phone,
         role: formData.role,
+        team: team._id || '',
         department: formData.department,
         position: formData.position,
         defaultLocation: formData.defaultLocation || undefined,
